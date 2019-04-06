@@ -4,8 +4,6 @@ use clap::SubCommand;
 
 trait Command {
 
-    fn new() -> Self;
-
     fn clap(&self) -> SubCommand;
 
     fn execute(&self) {

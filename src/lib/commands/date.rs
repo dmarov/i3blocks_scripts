@@ -1,44 +1,43 @@
-pub mod date;
+extern crate chrono;
+extern crate serde_json;
+extern crate clap;
 
-// extern crate chrono;
-// extern crate serde_json;
+use chrono::{FixedOffset, Utc };
+use clap::{App, Arg, SubCommand};
 
-// use chrono::{ FixedOffset, Utc };
 struct Date {
-    name: "date"
+    app: App,
 }
 
 impl Command for Date {
 
-    fn new() {
-    
-    }
+    fn new(&self) -> Self {
 
-    fn clap(&self) {
-    
-                SubCommand::with_name(self.name)
-                .about("return current date")
-                .version("0.1.0")
-                .arg(
-                    Arg::with_name("format")
-                        .short("f")
-                        .long("format")
-                        .value_name("STRFTIME_FMT")
-                        .help("Sets a custom date format")
-                        .takes_value(true)
-                )
-                .arg(
-                    Arg::with_name("utc")
-                        .short("u")
-                        .long("utc")
-                        .value_name("UTC_OFFSET")
-                        .help("Sets a custom utc offset")
-                        .takes_value(true)
-                )
+        self.app = SubCommand::with_name(self.name)
+            .about("return current date")
+            .version("0.1.0")
+            .arg(
+                Arg::with_name("format")
+                    .short("f")
+                    .long("format")
+                    .value_name("STRFTIME_FMT")
+                    .help("Sets a custom date format")
+                    .takes_value(true)
+            )
+            .arg(
+                Arg::with_name("utc")
+                    .short("u")
+                    .long("utc")
+                    .value_name("UTC_OFFSET")
+                    .help("Sets a custom utc offset")
+                    .takes_value(true)
+            );
     }
 
     fn execute(&self) {
-    
+
+        let matches = self.app.get_matches();
+
         if let Some(matches) = matches.subcommand_matches("date") {
 
             let format = matches.value_of("format")
@@ -67,9 +66,5 @@ impl Command for Date {
         // });
 
         result
-    }
-
-    fn get_name() {
-        self.name
     }
 }

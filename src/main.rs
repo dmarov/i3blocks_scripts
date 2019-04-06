@@ -1,18 +1,25 @@
 mod lib;
 
-use lib::commands;
+use lib::{Executor, commands::*};
 
 fn main() -> Result<(), std::io::Error> {
 
-    let mut executor = lib::executor::new();
+    let mut executor = Executor::new();
 
-    executor.add(commands::Date::new())
-    executor.add(commands::Temperature::new())
+    executor.add(Date::new());
+    executor.add(Temperature::new());
 
     let command = executor.command_from_args();
-    let result = command.process();
 
-    println!("{}", result);
+    match command {
+        Some(cmd) => {
+            let res = cmd.execute();
+            println!("{}", res);
+        },
+        None => {
+
+        }
+    }
 
     Ok(())
 }
