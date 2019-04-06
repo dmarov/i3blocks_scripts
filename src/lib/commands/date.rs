@@ -37,7 +37,7 @@ impl<'a,'b> Command for Date<'a,'b> {
         Self(app)
     }
 
-    fn execute(&self) -> Result<String, std::error::Error> {
+    fn execute(&self) -> Result<String, Box<dyn std::error::Error>> {
 
         let matches = self.app.get_matches();
 

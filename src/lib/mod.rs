@@ -5,15 +5,19 @@ extern crate clap;
 use clap::{App, AppSettings};
 use self::core::Command;
 
-pub struct Executor {
+pub struct Executor<'a,'b,T> 
+    where T: Command
+{
 
-    app: App,
-    commands: Vec<Command>,
+    pub app: App<'a,'b>,
+    commands: Vec<T>,
 }
 
-impl Executor {
+impl<'a,'b,T> Executor<'a,'b,T> 
+    where T: Command
+{
 
-    fn new(&self) {
+    fn new(&self) -> Self {
 
         let app = App::new("i3blocks scripts")
             .version("0.0.1")
@@ -21,10 +25,15 @@ impl Executor {
             .about("outputs i3blocks formated data")
             .setting(AppSettings::SubcommandRequired);
 
-        self.app = app;
+        let commands: Vec<T> = Vec::new();
+
+        Executor{
+            app: app,
+            commands: *commands,
+        }
     }
 
-    fn command_from_args(&self) -> Option<Command> {
+    fn command_from_args(&self) -> Option<Box<T>> {
 
         match self.app.subcommand_name() {
             Some(name) => {
@@ -39,13 +48,13 @@ impl Executor {
                     }
                 }
 
-                res
+                Some(Box::new(res))
             },
             None => None
         }
     }
 
-    fn add(&self, cmd: Command) {
+    fn add(&self, cmd: T) {
 
         self.commands.push(cmd);
         self.app.subcommand(cmd.app);
