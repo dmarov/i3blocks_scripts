@@ -3,9 +3,9 @@ pub mod commands;
 
 extern crate clap;
 use clap::{App, AppSettings};
-use core::Command;
+use self::core::Command;
 
-struct Executor {
+pub struct Executor {
 
     app: App,
     commands: Vec<Command>,
@@ -13,7 +13,7 @@ struct Executor {
 
 impl Executor {
 
-    fn new() {
+    fn new(&self) {
 
         let app = App::new("i3blocks scripts")
             .version("0.0.1")
@@ -24,7 +24,7 @@ impl Executor {
         self.app = app;
     }
 
-    fn command_from_args() -> Option<Command> {
+    fn command_from_args(&self) -> Option<Command> {
 
         match self.app.subcommand_name() {
             Some(name) => {
@@ -45,7 +45,7 @@ impl Executor {
         }
     }
 
-    fn add(commands::Command: cmd) {
+    fn add(&self, cmd: Command) {
 
         self.commands.push(cmd);
         self.app.subcommand(cmd.app);

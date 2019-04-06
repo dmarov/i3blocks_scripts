@@ -1,13 +1,12 @@
 mod lib;
 
-use lib::{Executor, commands::*};
+use lib::{Executor, commands::Date};
 
 fn main() -> Result<(), std::io::Error> {
 
     let mut executor = Executor::new();
 
     executor.add(Date::new());
-    executor.add(Temperature::new());
 
     let command = executor.command_from_args();
 

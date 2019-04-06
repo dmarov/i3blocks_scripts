@@ -2,18 +2,19 @@ extern crate chrono;
 extern crate serde_json;
 extern crate clap;
 
-use chrono::{FixedOffset, Utc };
+use chrono::{FixedOffset, Utc, Local };
 use clap::{App, Arg, SubCommand};
+use crate::lib::core::Command;
 
-struct Date {
-    app: App,
+pub struct Date<'a,'b> {
+    app: App<'a,'b>,
 }
 
-impl Command for Date {
+impl<'a,'b> Command for Date<'a,'b> {
 
     fn new(&self) -> Self {
 
-        self.app = SubCommand::with_name(self.name)
+        let app = SubCommand::with_name("date")
             .about("return current date")
             .version("0.1.0")
             .arg(
@@ -32,39 +33,34 @@ impl Command for Date {
                     .help("Sets a custom utc offset")
                     .takes_value(true)
             );
+
+        Self(app)
     }
 
-    fn execute(&self) {
+    fn execute(&self) -> Result<String, std::error::Error> {
 
         let matches = self.app.get_matches();
 
-        if let Some(matches) = matches.subcommand_matches("date") {
+        let format = matches.value_of("format")
+            .unwrap_or("%d/%m %H:%M");
 
-            let format = matches.value_of("format")
-                .unwrap_or("%d/%m %H:%M");
+        let mut date = Local::now();
 
-            println!("{}", format);
+        if matches.is_present("utc") {
+
+            let utc_offset = matches.value_of("utc").unwrap();
+            let date_no_tz = Utc::now();
+            let date_fixed = FixedOffset::east(utc_offset);
+            date = date_no_tz.with_timezone(&date_fixed);
         }
 
-        // let res = process_command();
-        // print!("{}", res);
+        let date_str = date.format(format).to_string();
 
-        // let args: Vec<String> = std::env::args().collect();
+        let json = serde_json::json!({
+            "version": 1,
+            "full_text": date_str,
+        });
 
-        // let fmt_str = &args[1];
-        // let offset = &args[2];
-        // let offset_sec: i32 = offset.parse().unwrap();
-
-        // let date = Utc::now();
-        // let date_fixed = FixedOffset::east(offset_sec);
-        // let date_tz = date.with_timezone(&date_fixed);
-        // let date_str = date_tz.format(fmt_str).to_string();
-
-        // let json = serde_json::json!({
-        //     "version": 1,
-        //     "full_text": date_str,
-        // });
-
-        result
+        json
     }
 }
