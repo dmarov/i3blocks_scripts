@@ -6,15 +6,15 @@ use clap::{App, AppSettings};
 use self::core::Command;
 
 pub struct Executor<'a,'b,T> 
-    where T: Command
+    where T: Command<'a,'b>
 {
 
-    pub app: App<'a,'b>,
+    app: App<'a,'b>,
     commands: Vec<T>,
 }
 
 impl<'a,'b,T> Executor<'a,'b,T> 
-    where T: Command
+    where T: Command<'a,'b>
 {
 
     pub fn new() -> Self {
@@ -35,18 +35,16 @@ impl<'a,'b,T> Executor<'a,'b,T>
 
     pub fn command_from_args(&self) -> Option<Box<T>> {
 
-        let name = self.app.get_name();
+        let name = self.app.get_matches().subcommand_name();
 
         let mut res = None;
         for cmd in self.commands {
 
-            if cmd.app.get_name() == name {
+            if Some(cmd.get_app().get_name()) == name {
 
-                res = Some(cmd);
+                res = Some(Box::new(cmd));
                 break;
             }
-
-            Some(Box::new(res))
         }
 
         res

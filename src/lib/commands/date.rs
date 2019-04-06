@@ -10,7 +10,7 @@ pub struct Date<'a,'b> {
     app: App<'a,'b>,
 }
 
-impl<'a,'b> Command for Date<'a,'b> {
+impl<'a,'b> Command<'a,'b> for Date<'a,'b> {
 
     fn new() -> Self {
 
@@ -34,7 +34,14 @@ impl<'a,'b> Command for Date<'a,'b> {
                     .takes_value(true)
             );
 
-        Self(app)
+        Self {
+            app: app
+        }
+    }
+
+    fn get_app(&self) -> App<'a,'b> {
+
+        self.app
     }
 
     fn execute(&self) -> Result<String, Box<dyn std::error::Error>> {
