@@ -11,6 +11,8 @@ trait Command {
     fn execute(&self) {
     
     }
+
+    fn get_name() -> String;
 };
 
 
