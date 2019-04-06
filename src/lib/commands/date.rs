@@ -51,23 +51,33 @@ impl<'a,'b> Command<'a,'b> for Date<'a,'b> {
         let format = matches.value_of("format")
             .unwrap_or("%d/%m %H:%M");
 
-        let mut date = Local::now();
+
+        let mut date_str = String::from("");
 
         if matches.is_present("utc") {
 
-            let utc_offset = matches.value_of("utc").unwrap();
+            let utc_offset: i32 = matches.value_of("utc")
+                .unwrap()
+                .parse()
+                .unwrap();
+
             let date_no_tz = Utc::now();
             let date_fixed = FixedOffset::east(utc_offset);
-            date = date_no_tz.with_timezone(&date_fixed);
+            let date = date_no_tz.with_timezone(&date_fixed);
+            date_str = date.format(format).to_string();
+
+        } else {
+
+            let date = Local::now();
+            date_str = date.to_string();
         }
 
-        let date_str = date.format(format).to_string();
 
         let json = serde_json::json!({
             "version": 1,
             "full_text": date_str,
         });
 
-        json
+        Ok(json.to_string())
     }
 }

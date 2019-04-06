@@ -5,7 +5,7 @@ use std::io::{Error, ErrorKind};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
 
-    let mut executor = Executor::new();
+    let executor = Executor::new();
 
     executor.add(Date::new());
 

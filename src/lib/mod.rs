@@ -53,6 +53,6 @@ impl<'a,'b,T> Executor<'a,'b,T>
     pub fn add(&self, cmd: T) {
 
         self.commands.push(cmd);
-        self.app.subcommand(cmd.app);
+        self.app.subcommand(cmd.get_app());
     }
 }
