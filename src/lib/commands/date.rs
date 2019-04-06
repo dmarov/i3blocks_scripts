@@ -6,6 +6,7 @@ use chrono::{FixedOffset, Utc, Local };
 use clap::{App, Arg, SubCommand};
 use crate::lib::core::Command;
 
+#[derive(Clone)]
 pub struct Date<'a,'b> {
     app: App<'a,'b>,
 }
@@ -41,12 +42,13 @@ impl<'a,'b> Command<'a,'b> for Date<'a,'b> {
 
     fn get_app(&self) -> App<'a,'b> {
 
-        self.app
+        self.app.clone()
     }
 
     fn execute(&self) -> Result<String, Box<dyn std::error::Error>> {
 
-        let matches = self.app.get_matches();
+        let app = self.app.clone();
+        let matches = app.get_matches();
 
         let format = matches.value_of("format")
             .unwrap_or("%d/%m %H:%M");

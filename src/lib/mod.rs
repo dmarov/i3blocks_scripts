@@ -6,7 +6,7 @@ use clap::{App, AppSettings};
 use self::core::Command;
 
 pub struct Executor<'a,'b,T> 
-    where T: Command<'a,'b>
+    where T: Command<'a,'b> + Clone
 {
 
     app: App<'a,'b>,
@@ -14,7 +14,7 @@ pub struct Executor<'a,'b,T>
 }
 
 impl<'a,'b,T> Executor<'a,'b,T> 
-    where T: Command<'a,'b>
+    where T: Command<'a,'b> + Clone
 {
 
     pub fn new() -> Self {
@@ -35,24 +35,29 @@ impl<'a,'b,T> Executor<'a,'b,T>
 
     pub fn command_from_args(&self) -> Option<Box<T>> {
 
-        let name = self.app.get_matches().subcommand_name();
+        let app = self.app.clone();
+        let matches = app.get_matches();
+        let name_option = matches.subcommand_name();
 
         let mut res = None;
-        for cmd in self.commands {
+        for cmd in self.commands.clone() {
 
-            if Some(cmd.get_app().get_name()) == name {
+            if let Some(name) = name_option {
 
-                res = Some(Box::new(cmd));
-                break;
+                if name == cmd.get_app().get_name() {
+
+                    res = Some(Box::new(cmd));
+                    break;
+                }
             }
         }
 
         res
     }
 
-    pub fn add(&self, cmd: T) {
+    pub fn add(&mut self, cmd: T) {
 
-        self.commands.push(cmd);
-        self.app.subcommand(cmd.get_app());
+        self.commands.push(cmd.clone());
+        self.app = self.app.clone().subcommand(cmd.clone().get_app());
     }
 }
