@@ -12,7 +12,7 @@ pub struct Date<'a,'b> {
 
 impl<'a,'b> Command for Date<'a,'b> {
 
-    fn new(&self) -> Self {
+    fn new() -> Self {
 
         let app = SubCommand::with_name("date")
             .about("return current date")

@@ -1,6 +1,7 @@
 mod lib;
 
-use lib::{Executor, commands::Date};
+use lib::{Executor, commands::Date, core::Command};
+use std::io::{Error, ErrorKind};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
 
@@ -13,14 +14,13 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     match command {
         Some(cmd) => {
             let res = cmd.execute()
-                .unwrap()
                 .expect("execution error");
 
             println!("{}", res);
             Ok(())
         },
         None => {
-            std::io::Error::new("command not found");
+            Err(Box::new(Error::new(ErrorKind::Other, "command not found")))
         },
     }
 }

@@ -17,7 +17,7 @@ impl<'a,'b,T> Executor<'a,'b,T>
     where T: Command
 {
 
-    fn new(&self) -> Self {
+    pub fn new() -> Self {
 
         let app = App::new("i3blocks scripts")
             .version("0.0.1")
@@ -29,32 +29,30 @@ impl<'a,'b,T> Executor<'a,'b,T>
 
         Executor{
             app: app,
-            commands: *commands,
+            commands: commands,
         }
     }
 
-    fn command_from_args(&self) -> Option<Box<T>> {
+    pub fn command_from_args(&self) -> Option<Box<T>> {
 
-        match self.app.subcommand_name() {
-            Some(name) => {
+        let name = self.app.get_name();
 
-                let mut res = None;
-                for cmd in self.commands {
+        let mut res = None;
+        for cmd in self.commands {
 
-                    if cmd.app.get_name() == name {
+            if cmd.app.get_name() == name {
 
-                        res = Some(cmd);
-                        break;
-                    }
-                }
+                res = Some(cmd);
+                break;
+            }
 
-                Some(Box::new(res))
-            },
-            None => None
+            Some(Box::new(res))
         }
+
+        res
     }
 
-    fn add(&self, cmd: T) {
+    pub fn add(&self, cmd: T) {
 
         self.commands.push(cmd);
         self.app.subcommand(cmd.app);
