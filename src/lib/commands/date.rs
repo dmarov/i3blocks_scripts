@@ -47,6 +47,8 @@ impl<'a,'b> Command<'a,'b> for Date<'a,'b> {
 
     fn execute(&self, args: ArgMatches) -> Result<String, Box<dyn std::error::Error>> {
 
+        let args = args.subcommand_matches("date").unwrap();
+
         let format = args.value_of("format")
             .unwrap_or("%d/%m %H:%M");
 
@@ -67,7 +69,7 @@ impl<'a,'b> Command<'a,'b> for Date<'a,'b> {
         } else {
 
             let date = Local::now();
-            date_str = date.to_string();
+            date_str = date.format(format).to_string();
         }
 
 
