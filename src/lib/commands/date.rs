@@ -40,9 +40,9 @@ impl<'a,'b> Command<'a,'b> for Date<'a,'b> {
         }
     }
 
-    fn get_app(&self) -> App<'a,'b> {
+    fn get_app(&self) -> &App<'a,'b> {
 
-        self.app.clone()
+        &self.app
     }
 
     fn execute(&self) -> Result<String, Box<dyn std::error::Error>> {
@@ -54,7 +54,7 @@ impl<'a,'b> Command<'a,'b> for Date<'a,'b> {
             .unwrap_or("%d/%m %H:%M");
 
 
-        let mut date_str = String::from("");
+        let mut date_str;
 
         if matches.is_present("utc") {
 
