@@ -3,7 +3,7 @@ extern crate serde_json;
 extern crate clap;
 
 use chrono::{FixedOffset, Utc, Local };
-use clap::{App, Arg, SubCommand};
+use clap::{App, Arg, SubCommand, ArgMatches};
 use crate::lib::core::Command;
 
 #[derive(Clone)]
@@ -45,21 +45,17 @@ impl<'a,'b> Command<'a,'b> for Date<'a,'b> {
         &self.app
     }
 
-    fn execute(&self) -> Result<String, Box<dyn std::error::Error>> {
+    fn execute(&self, args: ArgMatches) -> Result<String, Box<dyn std::error::Error>> {
 
-        let app = self.app.clone();
-        let matches = app.get_matches();
-
-        let format = matches.value_of("format")
+        let format = args.value_of("format")
             .unwrap_or("%d/%m %H:%M");
-
 
         let mut date_str;
 
-        if matches.is_present("utc") {
+        if args.is_present("utc") {
 
-            let utc_offset: i32 = matches.value_of("utc")
-                .unwrap()
+            let utc_offset: i32 = args.value_of("utc")
+                .unwrap_or("0")
                 .parse()
                 .unwrap();
 

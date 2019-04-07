@@ -1,7 +1,6 @@
 mod lib;
 
 use lib::{Executor, commands::Date, core::Command};
-use std::io::{Error, ErrorKind};
 
 fn main() -> Result<(), Box<dyn std::error::Error>> {
 
@@ -9,18 +8,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     executor.add(Date::new());
 
-    let command = executor.command_from_args();
+    let result = executor.perform();
 
-    match command {
-        Some(cmd) => {
-            let res = cmd.execute()
-                .expect("execution error");
+    match result {
+        Ok(result_ok) => {
 
-            println!("{}", res);
+            println!("{}", result_ok);
             Ok(())
         },
-        None => {
-            Err(Box::new(Error::new(ErrorKind::Other, "command not found")))
+        Err(e) => {
+            Err(e)
         },
     }
 }

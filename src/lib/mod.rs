@@ -4,6 +4,7 @@ pub mod commands;
 extern crate clap;
 use clap::{App, AppSettings};
 use self::core::Command;
+use std::error;
 
 pub struct Executor<'a,'b,T> 
     where T: Command<'a,'b>
@@ -32,27 +33,19 @@ impl<'a,'b,T> Executor<'a,'b,T>
         }
     }
 
-    pub fn command_from_args(&self) -> Option<&T> {
+    pub fn perform(&self) -> Result<String, Box<dyn error::Error>> {
 
         let app = &self.app;
         let matches = app.clone().get_matches();
-        let name_option = matches.subcommand_name();
+        let name = matches.subcommand_name().unwrap();
 
-        let mut res = None;
+        let commands = &self.commands;
+        let cmd = commands
+            .into_iter()
+            .find(|&item| item.get_app().clone().get_name() == name)
+            .unwrap();
 
-        for cmd in &self.commands {
-
-            if let Some(name) = name_option {
-
-                if name == cmd.get_app().get_name() {
-
-                    res = Some(cmd);
-                    break;
-                }
-            }
-        }
-
-        res
+        cmd.execute(matches)
     }
 
     pub fn add(&mut self, cmd: T) {
